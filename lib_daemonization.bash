@@ -80,11 +80,35 @@ kill_daemonized_script()
 {
     local input="$1"
 
+    _check_kill_daemonized_script_variables
+
     if [[ "$input" == 'all' ]]
     then
         kill_all_daemonized_script
     else
         kill_specific_daemonized_script "$input"
+    fi
+}
+
+_check_kill_daemonized_script_variables()
+{
+    local re='^[0-9]+$'
+    if ! [[ "$input" =~ $re ]] && \
+       ! [[ "$input" == 'all' ]]
+    then
+        echo "kill_daemonized_script: Input must be either a process id or 'all'"
+        echo "Exiting."
+        exit 1
+    elif [[ -z "$process_file_path" ]]
+    then
+        echo "kill_daemonized_script: \$process_file_path is not set"
+        echo "Exiting."
+        exit 1
+    elif [[ -z "$process_file_prefix" ]]
+    then
+        echo "kill_daemonized_script: \$process_file_prefix is not set"
+        echo "Exiting."
+        exit 1
     fi
 }
 

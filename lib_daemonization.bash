@@ -76,3 +76,28 @@ _check_daemonize_script_variables()
     fi
 }
 
+kill_specific_daemonized_script()
+{
+    local input="$1"
+    local re='^[0-9]+$'
+    if [[ "$input" =~ $re ]]
+    then # Is a number
+
+        if ps -p $input >/dev/null 2>&1
+        then # Process exist
+
+            if kill "$input"
+            then
+                echo "Killed process id: $input"
+                return 0
+            else
+                echo "Could not kill given process id: $input"
+                return 2
+            fi
+        else
+            echo "Found no process with corresponding process id: $input"
+            return 3
+        fi
+    fi
+}
+

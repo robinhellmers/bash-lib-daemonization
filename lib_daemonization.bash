@@ -76,6 +76,18 @@ _check_daemonize_script_variables()
     fi
 }
 
+kill_daemonized_script()
+{
+    local input="$1"
+
+    if [[ "$input" == 'all' ]]
+    then
+        kill_all_daemonized_script
+    else
+        kill_specific_daemonized_script "$input"
+    fi
+}
+
 kill_specific_daemonized_script()
 {
     local input="$1"

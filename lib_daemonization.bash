@@ -101,3 +101,53 @@ kill_specific_daemonized_script()
     fi
 }
 
+kill_all_daemonized_script()
+{
+    local ret_val
+
+    # Find files previously created files indicating daemon process
+    process_files="$(find $process_file_path -name ${process_file_prefix}*)"
+    if [[ -z "$process_files" ]]
+    then
+        echo "Did not find any daemon process file under:"
+        echo "    $process_file_path"
+        echo "There is thereby no info about any running process."
+        echo "Nothing killed."
+        exit 1
+    fi
+
+    while IFS= read -r file
+    do
+        # Get everything after last '-' in file name
+        process_id="${file##*-}"
+
+        re='^[0-9]+$'
+        [[ "$process_id" =~ $re ]] || continue
+
+        echo -e "\nFound previously created daemon process file:"
+        echo "    $file"
+
+        kill_specific_daemonized_script "$process_id"; ret_val=$?
+
+        case $ret_val in
+            0)
+                rm "$process_file_path/${process_file_prefix}-${process_id}"
+                ;;
+            2) # Could not kill process id
+                echo "Consider removing the daemon process file manually:"
+                echo "    $file"
+                ;;
+            3) # Found no corresponding process id
+                echo "Removing daemon process file:"
+                echo "    $file"
+                command rm "$file"
+                ;;
+            *)
+                echo "kill_all_daemonized_script: Unknown return value of kill_specific_daemonized_script."
+                echo "Exiting."
+                exit 1
+                ;;
+        esac
+
+    done <<< "$process_files"
+}

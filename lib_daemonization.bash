@@ -1,6 +1,7 @@
 
 daemonize_script()
 {
+    _check_daemonize_script_variables
 
     echo "Daemonizing script:"
     echo "    $daemon_script"
@@ -27,5 +28,51 @@ daemonize_script()
     disown
 
     # Continues this script instance
+}
+
+_check_daemonize_script_variables()
+{
+    if [[ -z "$daemon_script" ]]
+    then
+        echo "daemonize_script: Script not given in \$daemon_script."
+        echo "Exiting."
+        exit 1
+    elif ! [[ -f "$daemon_script" ]]
+    then
+        echo "daemonize_script: \$daemon_script is not a file."
+        echo "\$daemon_script: $daemon_script"
+        echo "Exiting."
+        exit 1
+    elif ! [[ -x "$daemon_script" ]]
+    then
+        echo "daemonize_script: \$daemon_script is not executable."
+        echo "\$daemon_script: $daemon_script"
+        echo "Exiting."
+        exit 1
+    elif [[ -z "$process_file_path" ]]
+    then
+        echo "Exiting."
+        exit 1
+    elif ! [[ -d "$process_file_path" ]]
+    then
+        mkdir -p "$process_file_path"
+        if ! [[ -d "$process_file_path" ]]
+        then
+            echo "daemonize_scripjt: Could not create directory for \$process_file_path."
+            echo "Exiting."
+            exit 1
+        fi
+    elif [[ -z "$process_file_prefix" ]]
+    then
+        echo "daemonize_script: \$process_file_prefix is not set."
+        echo "Exiting."
+        exit 1
+    elif [[ -n "$log_file_stdout" ]] && ! [[ -f "$log_file_stdout" ]]
+    then
+        echo "daemonize_script: \$log_file_stdout is not a file."
+        echo "log_file_stdout: $log_file_stdout"
+        echo "Exiting."
+        exit 1
+    fi
 }
 

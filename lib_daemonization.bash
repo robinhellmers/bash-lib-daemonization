@@ -84,9 +84,9 @@ kill_daemonized_script()
 
     if [[ "$input" == 'all' ]]
     then
-        kill_all_daemonized_script
+        _kill_all_daemonized_script
     else
-        kill_specific_daemonized_script "$input"
+        _kill_specific_daemonized_script "$input"
     fi
 }
 
@@ -112,7 +112,7 @@ _check_kill_daemonized_script_variables()
     fi
 }
 
-kill_specific_daemonized_script()
+_kill_specific_daemonized_script()
 {
     local input="$1"
     local re='^[0-9]+$'
@@ -137,7 +137,7 @@ kill_specific_daemonized_script()
     fi
 }
 
-kill_all_daemonized_script()
+_kill_all_daemonized_script()
 {
     local ret_val
 
@@ -163,7 +163,7 @@ kill_all_daemonized_script()
         echo -e "\nFound previously created daemon process file:"
         echo "    $file"
 
-        kill_specific_daemonized_script "$process_id"; ret_val=$?
+        _kill_specific_daemonized_script "$process_id"; ret_val=$?
 
         case $ret_val in
             0)
@@ -179,7 +179,7 @@ kill_all_daemonized_script()
                 command rm "$file"
                 ;;
             *)
-                echo "kill_all_daemonized_script: Unknown return value of kill_specific_daemonized_script."
+                echo "_kill_all_daemonized_script: Unknown return value of _kill_specific_daemonized_script."
                 echo "Exiting."
                 exit 1
                 ;;

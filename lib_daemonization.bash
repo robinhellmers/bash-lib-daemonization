@@ -1,4 +1,11 @@
 
+###
+# List of functions for usage outside of lib
+#
+# - daemonize_script()
+# - kill_daemonized_script()
+###
+
 daemonize_script()
 {
     _check_daemonize_script_variables
